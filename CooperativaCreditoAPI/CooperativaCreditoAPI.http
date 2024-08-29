@@ -1,0 +1,6 @@
+@CooperativaCreditoAPI_HostAddress = http://localhost:5289
+
+GET {{CooperativaCreditoAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
