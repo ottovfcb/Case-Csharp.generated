@@ -1,14 +1,32 @@
+using CooperativaCreditoAPI.Models.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
 public abstract class Conta
 {
-    public int Id { get; set; }
+    [Key]
+    public long Id { get; set; }
+    public TipoContaEnum Tipo { get; set; }
     public int Numero { get; set; }
     public int Agencia { get; set; }
-    public decimal Saldo { get; protected set; }
+    public double Saldo { get; protected set; }
+    public required long CorrentistaId { get; set; }
+    public double? Limite { get; set; }
 
-    public int CorrentistaId { get; set; }
-    public required Correntista Correntista { get; set; }
+    public Conta(){}
 
-    public void Depositar(decimal valor)
+    [JsonConstructor]
+    public Conta(TipoContaEnum tipo, int numero, int agencia, double saldo, long correntistaId, double? limite)
+    {
+        Tipo = tipo;
+        Numero = numero;
+        Agencia = agencia;
+        Saldo = saldo;
+        CorrentistaId = correntistaId;
+        Limite = limite;
+    }
+
+    public void Depositar(double valor)
     {
         if (valor <= 0)
         {
@@ -17,11 +35,11 @@ public abstract class Conta
 
         Saldo += valor;
     }
-    public abstract void Sacar(decimal valor);
+    public abstract void Sacar(double valor);
 
-    public abstract void AplicarJuros(decimal taxaJuros);
+    public abstract void AplicarJuros(double taxaJuros);
 
-    protected void ValidarValorPositivo(decimal valor)
+    protected void ValidarValorPositivo(double valor)
     {
         if (valor <= 0)
         {

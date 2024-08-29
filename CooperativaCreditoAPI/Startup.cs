@@ -1,4 +1,7 @@
+using CooperativaCreditoAPI.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 public class Startup
 {
@@ -17,15 +20,21 @@ public class Startup
 
         // Registrar os repositórios
         services.AddScoped<IRepository<Correntista>, CorrentistaRepository>();
+        services.AddScoped<IRepository<Conta>, ContaRepository>();
 
         // Adicionar serviços para controllers
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
         services.AddScoped<CorrentistaService>(); // Sem interface
         services.AddScoped<ContaService>();       // Sem interface
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -37,5 +46,10 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+
+        using var scope = app.ApplicationServices.CreateScope();
+        var context = scope.ServiceProvider.GetService<AppDbContext>();
+        DbInitializer.Initialize(context);
+
     }
 }

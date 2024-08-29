@@ -1,19 +1,23 @@
+using CooperativaCreditoAPI.Models.Enums;
+
 public static class ContaFactory
 {
-    public static Conta CriarConta(string tipoConta, Correntista correntista, int numero, int agencia, decimal saldoInicial, decimal limite = 0)
+    public static Conta CriarConta(TipoContaEnum tipo, long correntistaId, int numero, int agencia, double saldoInicial, double limite = 0)
     {
-        Conta conta = tipoConta.ToLower() switch
+        Conta conta = tipo switch
         {
-            "corrente" => new ContaCorrente
+            TipoContaEnum.Corrente => new ContaCorrente
             {
-                Correntista = correntista,
+                Tipo = tipo,
+                CorrentistaId = correntistaId,
                 Numero = numero,
                 Agencia = agencia,
                 Limite = limite
             },
-            "poupanca" => new ContaPoupanca
+            TipoContaEnum.Poupanca => new ContaPoupanca
             {
-                Correntista = correntista,
+                Tipo = tipo,
+                CorrentistaId = correntistaId,
                 Numero = numero,
                 Agencia = agencia
             },

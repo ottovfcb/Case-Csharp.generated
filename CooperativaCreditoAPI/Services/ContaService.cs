@@ -1,3 +1,5 @@
+using CooperativaCreditoAPI.Models.Enums;
+
 public class ContaService
 {
     private readonly IRepository<Conta> _contaRepository;
@@ -7,22 +9,23 @@ public class ContaService
         _contaRepository = contaRepository;
     }
 
-    public Conta? GetContaById(int id) => _contaRepository.GetById(id);
+    public Conta? GetContaById(long id) => _contaRepository.GetById(id);
 
     public IEnumerable<Conta> GetAllContas() => _contaRepository.GetAll();
 
-    public void AddConta(string tipoConta, Correntista correntista, int numero, int agencia, decimal saldoInicial, decimal limite = 0)
-{
-    var conta = ContaFactory.CriarConta(tipoConta, correntista, numero, agencia, saldoInicial, limite);
-
-    if (conta == null)
+    public long AddConta(TipoContaEnum tipoConta, long correntistaId, int numero, int agencia, double saldoInicial, double limite = 0)
     {
-        throw new ArgumentException("Tipo de conta inválido.");
-    }
+        var conta = ContaFactory.CriarConta(tipoConta, correntistaId, numero, agencia, saldoInicial, limite);
 
-    _contaRepository.Add(conta);
-    _contaRepository.Save();
-}
+        if (conta == null)
+        {
+            throw new ArgumentException("Tipo de conta inválido.");
+        }
+
+        _contaRepository.Add(conta);
+        _contaRepository.Save();
+        return conta.Id;
+    }
 
     public void UpdateConta(Conta conta)
     {
@@ -30,7 +33,7 @@ public class ContaService
         _contaRepository.Save();
     }
 
-    public void DeleteConta(int id)
+    public void DeleteConta(long id)
     {
         var conta = _contaRepository.GetById(id);
         if (conta != null)
@@ -40,7 +43,7 @@ public class ContaService
         }
     }
 
-    public void Depositar(int contaId, decimal valor)
+    public void Depositar(int contaId, double valor)
     {
         var conta = _contaRepository.GetById(contaId);
         if (conta == null) throw new Exception("Conta não encontrada.");
@@ -50,32 +53,62 @@ public class ContaService
         _contaRepository.Save();
     }
 
-    public void Sacar(int contaId, decimal valor)
+    public void Sacar(int contaId, double valor)
     {
         var conta = _contaRepository.GetById(contaId);
+
         if (conta == null) throw new Exception("Conta não encontrada.");
 
-        conta.Sacar(valor);
+        try
+        {
+            conta.Sacar(valor);
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine($"Erro: {ex.Message}");
+            return;
+        }
+        
+
         _contaRepository.Update(conta);
         _contaRepository.Save();
     }
 
-    public void AplicarJurosContaPoupanca(int contaId, decimal taxaJuros)
+    public void AplicarJurosContaPoupanca(int contaId, double taxaJuros)
     {
         var conta = _contaRepository.GetById(contaId) as ContaPoupanca;
         if (conta == null) throw new Exception("Conta poupança não encontrada.");
 
-        conta.AplicarJuros(taxaJuros);
+        try
+        {
+            conta.AplicarJuros(taxaJuros);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro: {ex.Message}");
+            return;
+        }
+        
         _contaRepository.Update(conta);
         _contaRepository.Save();
     }
 
-    public void AplicarJurosContaCorrente(int contaId, decimal taxaJuros)
+    public void AplicarJurosContaCorrente(int contaId, double taxaJuros)
     {
         var conta = _contaRepository.GetById(contaId) as ContaCorrente;
         if (conta == null) throw new Exception("Conta corrente não encontrada.");
 
-        conta.AplicarJuros(taxaJuros);
+        try
+        {
+            conta.AplicarJuros(taxaJuros);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro: {ex.Message}");
+            return;
+        }
+
+
         _contaRepository.Update(conta);
         _contaRepository.Save();
     }

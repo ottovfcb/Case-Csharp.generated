@@ -1,12 +1,13 @@
+using CooperativaCreditoAPI.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-public class CorrentistasController : ControllerBase
+public class CorrentistaController : ControllerBase
 {
     private readonly CorrentistaService _correntistaService;
 
-    public CorrentistasController(CorrentistaService correntistaService)
+    public CorrentistaController(CorrentistaService correntistaService)
     {
         _correntistaService = correntistaService;
     }
@@ -28,14 +29,21 @@ public class CorrentistasController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult AddCorrentista([FromBody] Correntista correntista)
+    public IActionResult AddCorrentista([FromBody] CorrentistaDTO correntistaDTO)
     {
-        _correntistaService.AddCorrentista(correntista);
-        return CreatedAtAction(nameof(GetCorrentistaById), new { id = correntista.Id }, correntista);
+        var correntistaId = _correntistaService.AddCorrentista(
+            correntistaDTO.CPF,
+            correntistaDTO.Nome,
+            correntistaDTO.Endereco,
+            correntistaDTO.Profissao         
+            );
+
+
+        return CreatedAtAction(nameof(GetCorrentistaById), new { id = correntistaId }, correntistaDTO);
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateCorrentista(int id, [FromBody] Correntista correntista)
+    public IActionResult UpdateCorrentista(long id, [FromBody] Correntista correntista)
     {
         if (id != correntista.Id) return BadRequest();
 

@@ -1,6 +1,6 @@
 public class ContaPoupanca : Conta
 {
-    public override void Sacar(decimal valor)
+    public override void Sacar(double valor)
     {
         ValidarValorPositivo(valor);
 
@@ -14,10 +14,9 @@ public class ContaPoupanca : Conta
         }
     }
 
-    public override void AplicarJuros(decimal taxaDeJuros)
+    public override void AplicarJuros(double taxaJuros)
     {
-
-        ValidarValorPositivo(taxaDeJuros);
-        Saldo += Saldo * taxaDeJuros;
+        ValidarValorPositivo(taxaJuros);
+        Saldo += Saldo * taxaJuros;
     }
 }

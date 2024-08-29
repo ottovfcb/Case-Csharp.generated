@@ -1,8 +1,6 @@
 public class ContaCorrente : Conta
 {
-    public decimal Limite { get; set; }
-
-    public override void Sacar(decimal valor)
+    public override void Sacar(double valor)
     {
         ValidarValorPositivo(valor);
 
@@ -16,11 +14,13 @@ public class ContaCorrente : Conta
         }
     }
 
-    public override void AplicarJuros(decimal taxaJuros)
+    public override void AplicarJuros(double taxaJuros)
     {
+        ValidarValorPositivo(taxaJuros);
+
         if (Saldo < 0)
         {
-            Saldo -= Saldo * taxaJuros;
+            Saldo += Saldo * taxaJuros;
         }
     }
 }
